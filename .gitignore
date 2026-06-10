@@ -1,0 +1,110 @@
+# =========================
+# Python / FastAPI Backend
+# =========================
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+
+# =========================
+# Node / React Frontend
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+node_modules/
+dist/
+.vite/
+
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+backend/.env
+frontend/.env
+frontend/.env.local
+
+
+# =========================
+# Uploaded Files / Datasets
+# =========================
+backend/uploads/
+backend/data/
+backend/temp/
+backend/tmp/
+
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.pkl
+*.joblib
+
+
+# =========================
+# Generated Reports / Models
+# =========================
+backend/reports/
+backend/models/
+backend/exports/
+
+*.pdf
+*.html
+
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+
+# =========================
+# Database Files
+# =========================
+*.db
+*.sqlite
+*.sqlite3
