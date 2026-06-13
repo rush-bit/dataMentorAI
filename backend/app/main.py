@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes.dataset_routes import router as dataset_router
 
 app = FastAPI(
     title="DataMentor AI API",
@@ -7,7 +8,6 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# Allow frontend to communicate with backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -15,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(dataset_router)
 
 
 @app.get("/")
@@ -29,4 +31,4 @@ def health_check():
     return {
         "status": "ok",
         "service": "DataMentor AI Backend"
-    }    
+    }
