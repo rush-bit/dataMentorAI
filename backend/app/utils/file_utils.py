@@ -14,10 +14,6 @@ def validate_csv_file(file: UploadFile) -> None:
 
     if not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are allowed")
-        
-    # Check if the file size exceeds 10MB (10 * 1024 * 1024 bytes)
-    if file.size is not None and file.size > 10485760:
-        raise HTTPException(status_code=413, detail="File size exceeds the 10MB limit")
 
 
 def save_uploaded_file(file: UploadFile) -> tuple[str, Path]:
@@ -31,3 +27,12 @@ def save_uploaded_file(file: UploadFile) -> tuple[str, Path]:
         shutil.copyfileobj(file.file, buffer)
 
     return dataset_id, file_path
+
+
+def get_dataset_file_path(dataset_id: str) -> Path:
+    matching_files = list(UPLOAD_DIR.glob(f"{dataset_id}_*"))
+
+    if not matching_files:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    return matching_files[0]
