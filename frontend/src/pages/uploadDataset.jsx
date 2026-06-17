@@ -96,7 +96,6 @@ function UploadDataset() {
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
-      <h1>DataMentor AI</h1>
       <p>Upload a CSV dataset to start analysis.</p>
 
       <div
