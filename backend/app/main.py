@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.dataset_routes import router as dataset_router
 from app.routes.eda_routes import router as eda_router
+from app.routes.target_routes import router as target_router
 
 app = FastAPI(
     title="DataMentor AI API",
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(dataset_router)
 app.include_router(eda_router)
+app.include_router(target_router)
 
 
 @app.get("/")

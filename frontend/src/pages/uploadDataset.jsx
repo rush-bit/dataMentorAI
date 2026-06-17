@@ -139,13 +139,16 @@
 
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
+
 import DatasetPreview from "../components/DatasetPreview";
 import EDAReport from "../components/EDAReport";
+import TargetSelector from "../components/TargetSelector";
 
 function UploadDataset() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [datasetInfo, setDatasetInfo] = useState(null);
   const [edaReport, setEdaReport] = useState(null);
+  const [targetInfo, setTargetInfo] = useState(null);
 
   const [uploadLoading, setUploadLoading] = useState(false);
   const [edaLoading, setEdaLoading] = useState(false);
@@ -156,6 +159,7 @@ function UploadDataset() {
     setSelectedFile(event.target.files[0]);
     setDatasetInfo(null);
     setEdaReport(null);
+    setTargetInfo(null);
     setError("");
   };
 
@@ -171,6 +175,8 @@ function UploadDataset() {
     try {
       setUploadLoading(true);
       setError("");
+      setEdaReport(null);
+      setTargetInfo(null);
 
       const response = await axiosClient.post("/api/datasets/upload", formData, {
         headers: {
@@ -190,18 +196,24 @@ function UploadDataset() {
   };
 
   const handleGenerateEDA = async () => {
-    if (!datasetInfo?.dataset_id) return;
+    if (!datasetInfo?.dataset_id) {
+      setError("Please upload a dataset first.");
+      return;
+    }
 
     try {
       setEdaLoading(true);
       setError("");
 
-      const response = await axiosClient.get(`/api/datasets/${datasetInfo.dataset_id}/eda`);
+      const response = await axiosClient.get(
+        `/api/datasets/${datasetInfo.dataset_id}/eda`
+      );
+
       setEdaReport(response.data);
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.detail || "Something went wrong while generating the EDA report."
+        err.response?.data?.detail || "Something went wrong while generating EDA."
       );
     } finally {
       setEdaLoading(false);
@@ -231,11 +243,7 @@ function UploadDataset() {
             display: "block",
             marginTop: "16px",
             padding: "10px 16px",
-            cursor: uploadLoading ? "not-allowed" : "pointer",
-            backgroundColor: "#3b82f6",
-            color: "white",
-            border: "none",
-            borderRadius: "4px"
+            cursor: "pointer",
           }}
         >
           {uploadLoading ? "Uploading..." : "Upload CSV"}
@@ -251,29 +259,54 @@ function UploadDataset() {
       {datasetInfo && (
         <>
           <DatasetPreview datasetInfo={datasetInfo} />
-          
-          <div style={{ marginTop: "32px", padding: "20px", borderTop: "2px solid #eee" }}>
-            <h3>Ready for Deeper Analysis?</h3>
-            <button
-              onClick={handleGenerateEDA}
-              disabled={edaLoading}
-              style={{
-                padding: "10px 16px",
-                cursor: edaLoading ? "not-allowed" : "pointer",
-                backgroundColor: "#10b981", // Green color for the next step
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                fontSize: "16px"
-              }}
-            >
-              {edaLoading ? "Analyzing Dataset..." : "Generate EDA Report"}
-            </button>
-          </div>
+
+          <button
+            onClick={handleGenerateEDA}
+            disabled={edaLoading}
+            style={{
+              marginTop: "24px",
+              padding: "10px 16px",
+              cursor: "pointer",
+            }}
+          >
+            {edaLoading ? "Generating EDA..." : "Generate Basic EDA"}
+          </button>
+
+          <TargetSelector
+            datasetId={datasetInfo.dataset_id}
+            columns={datasetInfo.column_names}
+            onTargetSelected={setTargetInfo}
+          />
         </>
       )}
 
       {edaReport && <EDAReport edaReport={edaReport} />}
+
+      {targetInfo && (
+        <div
+          style={{
+            marginTop: "32px",
+            padding: "16px",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            maxWidth: "700px",
+          }}
+        >
+          <h3>Next Step</h3>
+
+          {targetInfo.is_suitable ? (
+            <p>
+              This target column is suitable. In the next layer, we will train
+              models for a <strong>{targetInfo.problem_type}</strong> problem.
+            </p>
+          ) : (
+            <p>
+              This target column is not suitable for training. Select another
+              target column.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
