@@ -1,14 +1,25 @@
-import { NavLink } from "react-router-dom";
-
 function Sidebar() {
   const navItems = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Upload Dataset", path: "/dashboard" },
-    { label: "EDA Assistant", path: "/dashboard" },
-    { label: "Model Training", path: "/dashboard" },
-    { label: "Experiments", path: "/dashboard" },
-    { label: "Reports", path: "/dashboard" },
+    { label: "Dashboard", sectionId: "dashboard-top" },
+    { label: "Upload Dataset", sectionId: "upload-section" },
+    { label: "Basic EDA", sectionId: "basic-eda-section" },
+    { label: "EDA Assistant", sectionId: "advanced-eda-section" },
+    { label: "Target Selection", sectionId: "target-section" },
+    { label: "Preprocessing", sectionId: "preprocessing-section" },
+    { label: "Model Training", sectionId: "model-training-section" },
+    { label: "Reports", sectionId: "reports-section" },
   ];
+
+  const handleScroll = (sectionId) => {
+    const section = document.getElementById(sectionId);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
   return (
     <aside
@@ -32,10 +43,11 @@ function Sidebar() {
         >
           DataMentor AI
         </h2>
+
         <p
           style={{
             margin: "6px 0 0",
-            color: "#94a3b8",
+            color: "#d6c3b0",
             fontSize: "13px",
           }}
         >
@@ -45,19 +57,29 @@ function Sidebar() {
 
       <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {navItems.map((item) => (
-          <NavLink
+          <button
             key={item.label}
-            to={item.path}
-            style={({ isActive }) => ({
+            type="button"
+            onClick={() => handleScroll(item.sectionId)}
+            style={{
               padding: "12px 14px",
               borderRadius: "10px",
-              color: "#e2e8f0",
-              background: isActive ? "var(--bg-sidebar-hover)" : "transparent",
-              fontWeight: isActive ? 700 : 500,
-            })}
+              color: "var(--text-light)",
+              background: "transparent",
+              border: "none",
+              textAlign: "left",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+            onMouseEnter={(event) => {
+              event.currentTarget.style.background = "var(--bg-sidebar-hover)";
+            }}
+            onMouseLeave={(event) => {
+              event.currentTarget.style.background = "transparent";
+            }}
           >
             {item.label}
-          </NavLink>
+          </button>
         ))}
       </nav>
     </aside>

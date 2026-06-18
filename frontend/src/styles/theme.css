@@ -156,3 +156,10 @@ td,
 th {
   border-color: var(--border) !important;
 }
+html {
+  scroll-behavior: smooth;
+}
+
+[id] {
+  scroll-margin-top: 90px;
+}

@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+// import { GoArrowLeft } from "react-icons/go";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -23,16 +25,14 @@ function SignupPage() {
     >
       <Card style={{ width: "100%", maxWidth: "460px" }}>
         <Link to="/" style={{ color: "var(--primary)", fontWeight: 800 }}>
-          DataMentor AI
+            {/* <GoArrowLeft /> */}
+            <FaArrowLeftLong />
         </Link>
 
         <h1 style={{ margin: "24px 0 8px", letterSpacing: "-0.04em" }}>
           Create account
         </h1>
 
-        <p style={{ margin: "0 0 24px", color: "var(--text-muted)" }}>
-          Signup UI is ready. Real Supabase Auth will be connected later.
-        </p>
 
         <form onSubmit={handleSubmit}>
           <label>Name</label>

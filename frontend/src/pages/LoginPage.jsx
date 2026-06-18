@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,7 +14,6 @@ function LoginPage() {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Login UI is ready. Real Supabase Auth will be connected later."
     >
       <form onSubmit={handleSubmit}>
         <label>Email</label>
@@ -53,7 +53,7 @@ function AuthShell({ title, subtitle, children }) {
     >
       <Card style={{ width: "100%", maxWidth: "430px" }}>
         <Link to="/" style={{ color: "var(--primary)", fontWeight: 800 }}>
-          DataMentor AI
+            <FaArrowLeftLong />
         </Link>
 
         <h1 style={{ margin: "24px 0 8px", letterSpacing: "-0.04em" }}>
