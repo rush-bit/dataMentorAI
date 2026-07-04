@@ -6,6 +6,7 @@ from app.routes.eda_routes import router as eda_router
 from app.routes.target_routes import router as target_router
 from app.routes.preprocessing_routes import router as preprocessing_router
 from app.routes.advanced_eda_routes import router as advanced_eda_router
+from app.routes.model_routes import router as model_router
 
 app = FastAPI(
     title="DataMentor AI API",
@@ -26,6 +27,7 @@ app.include_router(eda_router)
 app.include_router(target_router)
 app.include_router(preprocessing_router)
 app.include_router(advanced_eda_router)
+app.include_router(model_router)
 
 
 @app.get("/")

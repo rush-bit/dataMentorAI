@@ -221,6 +221,7 @@ import TargetSelector from "../components/TargetSelector";
 import PreprocessingCoach from "../components/PreprocessingCoach";
 import AdvancedEDA from "../components/AdvancedEDA";
 import ErrorBoundary from "../components/ErrorBoundary";
+import ModelTrainer from "../components/ModelTrainer";
 
 function UploadDataset() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -528,7 +529,7 @@ function UploadDataset() {
         </div>
       )}
 
-      <section id="model-training-section" style={{ marginTop: "24px" }}>
+      {/* <section id="model-training-section" style={{ marginTop: "24px" }}>
         <div
           className="card"
           style={{
@@ -544,7 +545,13 @@ function UploadDataset() {
             preprocessing pipeline.
           </p>
         </div>
-      </section>
+      </section> */}
+      <section id="model-training-section" style={{ marginTop: "24px" }}>
+      <ModelTrainer
+        datasetId={datasetInfo?.dataset_id}
+        targetInfo={targetInfo}
+      />
+    </section>
 
       <section id="reports-section" style={{ marginTop: "24px" }}>
         <div
