@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
+import MetricExplainer from "./MetricExplainer";
 
 function ModelTrainer({ datasetId, targetInfo }) {
   const [suggestedModels, setSuggestedModels] = useState([]);
@@ -296,6 +297,7 @@ function TrainingResults({ trainingResult }) {
       )}
 
       <FailedModels trainedModels={trainedModels} />
+      <MetricExplainer trainingResult={trainingResult} />
     </div>
   );
 }
