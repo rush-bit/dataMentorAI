@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+function Sidebar({ collapsed, setCollapsed }) {
   const [history, setHistory] = useState([]);
 
   const loadHistory = () => {
@@ -37,12 +36,15 @@ function Sidebar() {
     <aside
       style={{
         width: collapsed ? "72px" : "280px",
-        minHeight: "100vh",
+        height: "100vh",
         background: "var(--bg-sidebar)",
         color: "var(--text-light)",
         padding: collapsed ? "18px 12px" : "22px 16px",
-        position: "sticky",
+        position: "fixed",
+        left: 0,
         top: 0,
+        bottom: 0,
+        zIndex: 200,
         transition: "width 0.2s ease",
         overflow: "hidden",
       }}
@@ -103,7 +105,7 @@ function Sidebar() {
           <button
             type="button"
             onClick={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              window.dispatchEvent(new Event("start-new-dataset"));
             }}
             style={{
               width: "100%",
@@ -121,7 +123,13 @@ function Sidebar() {
             + New Dataset
           </button>
 
-          <div>
+          <div
+            style={{
+              height: "calc(100vh - 150px)",
+              overflowY: "auto",
+              paddingRight: "4px",
+            }}
+          >
             <p
               style={{
                 margin: "0 0 10px",
