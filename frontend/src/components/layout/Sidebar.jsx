@@ -8,6 +8,7 @@ function Sidebar() {
     { label: "Preprocessing", sectionId: "preprocessing-section" },
     { label: "Model Training", sectionId: "model-training-section" },
     { label: "Reports", sectionId: "reports-section" },
+    { label: "AI Tutor", sectionId: "ai-tutor-section" },
   ];
 
   const handleScroll = (sectionId) => {

@@ -222,8 +222,11 @@ import PreprocessingCoach from "../components/PreprocessingCoach";
 import AdvancedEDA from "../components/AdvancedEDA";
 import ErrorBoundary from "../components/ErrorBoundary";
 import ModelTrainer from "../components/ModelTrainer";
+import AITutorChat from "../components/AITutorChat";
 
 function UploadDataset() {
+  const [advancedEDA, setAdvancedEDA] = useState(null);
+  const [trainingResult, setTrainingResult] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [datasetInfo, setDatasetInfo] = useState(null);
   const [edaReport, setEdaReport] = useState(null);
@@ -238,6 +241,8 @@ function UploadDataset() {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
 
+    setAdvancedEDA(null);
+    setTrainingResult(null);
     setSelectedFile(file || null);
     setDatasetInfo(null);
     setEdaReport(null);
@@ -261,6 +266,8 @@ function UploadDataset() {
     formData.append("file", selectedFile);
 
     try {
+      setAdvancedEDA(null);
+      setTrainingResult(null);
       setUploadLoading(true);
       setError("");
       setEdaReport(null);
@@ -316,6 +323,8 @@ function UploadDataset() {
   };
 
   const handleTargetSelected = (newTargetInfo) => {
+    setAdvancedEDA(null);
+    setTrainingResult(null);
     setTargetInfo(newTargetInfo);
     setPreprocessingPlan(null);
   };
@@ -477,6 +486,7 @@ function UploadDataset() {
             <AdvancedEDA
               datasetId={datasetInfo.dataset_id}
               targetInfo={targetInfo}
+              onAdvancedEDAComplete={setAdvancedEDA}
             />
           </ErrorBoundary>
         </section>
@@ -550,8 +560,19 @@ function UploadDataset() {
       <ModelTrainer
         datasetId={datasetInfo?.dataset_id}
         targetInfo={targetInfo}
+        onTrainingComplete={setTrainingResult}
       />
     </section>
+    <section id="ai-tutor-section" style={{ marginTop: "24px" }}>
+        <AITutorChat
+          datasetInfo={datasetInfo}
+          edaReport={edaReport}
+          targetInfo={targetInfo}
+          advancedEDA={advancedEDA}
+          preprocessingPlan={preprocessingPlan}
+          trainingResult={trainingResult}
+        />
+      </section>
 
       <section id="reports-section" style={{ marginTop: "24px" }}>
         <div

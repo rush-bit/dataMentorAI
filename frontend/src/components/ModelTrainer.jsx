@@ -2,7 +2,7 @@ import { useState } from "react";
 import axiosClient from "../api/axiosClient";
 import MetricExplainer from "./MetricExplainer";
 
-function ModelTrainer({ datasetId, targetInfo }) {
+function ModelTrainer({ datasetId, targetInfo,onTrainingComplete  }) {
   const [suggestedModels, setSuggestedModels] = useState([]);
   const [selectedModels, setSelectedModels] = useState([]);
   const [trainingResult, setTrainingResult] = useState(null);
@@ -92,6 +92,9 @@ function ModelTrainer({ datasetId, targetInfo }) {
       );
 
       setTrainingResult(response.data);
+      if (onTrainingComplete) {
+        onTrainingComplete(response.data);
+      }
     } catch (err) {
       console.error("Training error:", err);
       setError(

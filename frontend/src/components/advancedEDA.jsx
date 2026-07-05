@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
 
-function AdvancedEDA({ datasetId, targetInfo }) {
+function AdvancedEDA({ datasetId, targetInfo, onAdvancedEDAComplete }) {
   const [advancedEDA, setAdvancedEDA] = useState(null);
   const [selectedDistributionColumn, setSelectedDistributionColumn] = useState("");
   const [selectedRelationshipColumn, setSelectedRelationshipColumn] = useState("");
@@ -24,6 +24,9 @@ function AdvancedEDA({ datasetId, targetInfo }) {
 
       const data = response.data;
       setAdvancedEDA(data);
+      if (onAdvancedEDAComplete) {
+        onAdvancedEDAComplete(data);
+      }
 
       const distributionColumns = Object.keys(data?.distributions || {});
       setSelectedDistributionColumn(distributionColumns[0] || "");
