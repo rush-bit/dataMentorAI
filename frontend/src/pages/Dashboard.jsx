@@ -8,8 +8,8 @@ function Dashboard() {
         <h1 className="page-title">Dataset Workspace</h1>
 
         <p className="page-subtitle">
-          Start with CSV upload, then move through EDA, target selection,
-          preprocessing, and model training.
+          Upload a dataset and move through preview, EDA, preprocessing,
+          modeling, metrics, and AI tutoring.
         </p>
       </div>
 

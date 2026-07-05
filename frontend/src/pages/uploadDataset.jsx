@@ -1,217 +1,3 @@
-// import { useState } from "react";
-// import axiosClient from "../api/axiosClient";
-
-// import DatasetPreview from "../components/DatasetPreview";
-// import EDAReport from "../components/EDAReport";
-// import TargetSelector from "../components/TargetSelector";
-// import PreprocessingCoach from "../components/PreprocessingCoach";
-// import AdvancedEDA from "../components/AdvancedEDA"; 
-// import ErrorBoundary from "../components/ErrorBoundary";
-
-// function UploadDataset() {
-//   const [selectedFile, setSelectedFile] = useState(null);
-//   const [datasetInfo, setDatasetInfo] = useState(null);
-//   const [edaReport, setEdaReport] = useState(null);
-//   const [targetInfo, setTargetInfo] = useState(null);
-//   const [preprocessingPlan, setPreprocessingPlan] = useState(null);
-
-//   const [uploadLoading, setUploadLoading] = useState(false);
-//   const [edaLoading, setEdaLoading] = useState(false);
-
-//   const [error, setError] = useState("");
-
-//   const handleFileChange = (event) => {
-//     setSelectedFile(event.target.files[0]);
-//     setDatasetInfo(null);
-//     setEdaReport(null);
-//     setTargetInfo(null);
-//     setPreprocessingPlan(null);
-//     setError("");
-//   };
-
-//   const handleUpload = async () => {
-//     if (!selectedFile) {
-//       setError("Please select a CSV file first.");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("file", selectedFile);
-
-//     try {
-//       setUploadLoading(true);
-//       setError("");
-//       setEdaReport(null);
-//       setTargetInfo(null);
-//       setPreprocessingPlan(null);
-
-//       const response = await axiosClient.post("/api/datasets/upload", formData, {
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//         },
-//       });
-
-//       setDatasetInfo(response.data);
-//     } catch (err) {
-//       console.error(err);
-//       setError(
-//         err.response?.data?.detail ||
-//           "Something went wrong while uploading the file."
-//       );
-//     } finally {
-//       setUploadLoading(false);
-//     }
-//   };
-
-//   const handleGenerateEDA = async () => {
-//     if (!datasetInfo?.dataset_id) {
-//       setError("Please upload a dataset first.");
-//       return;
-//     }
-
-//     try {
-//       setEdaLoading(true);
-//       setError("");
-
-//       const response = await axiosClient.get(
-//         `/api/datasets/${datasetInfo.dataset_id}/eda`
-//       );
-
-//       setEdaReport(response.data);
-//     } catch (err) {
-//       console.error(err);
-//       setError(
-//         err.response?.data?.detail ||
-//           "Something went wrong while generating EDA."
-//       );
-//     } finally {
-//       setEdaLoading(false);
-//     }
-//   };
-
-//   const handleTargetSelected = (newTargetInfo) => {
-//     setTargetInfo(newTargetInfo);
-//     setPreprocessingPlan(null);
-//   };
-
-//   return (
-//     <div style={{ padding: "40px", fontFamily: "Arial" }}>
-//       <p>Upload a CSV dataset to start analysis.</p>
-
-//       <div
-//         style={{
-//           marginTop: "24px",
-//           padding: "20px",
-//           border: "1px solid #ddd",
-//           borderRadius: "8px",
-//           maxWidth: "500px",
-//         }}
-//       >
-//         <input type="file" accept=".csv" onChange={handleFileChange} />
-
-//         <button
-//           onClick={handleUpload}
-//           disabled={uploadLoading}
-//           style={{
-//             display: "block",
-//             marginTop: "16px",
-//             padding: "10px 16px",
-//             cursor: "pointer",
-//           }}
-//         >
-//           {uploadLoading ? "Uploading..." : "Upload CSV"}
-//         </button>
-
-//         {error && (
-//           <p style={{ color: "red", marginTop: "12px" }}>
-//             {error}
-//           </p>
-//         )}
-//       </div>
-
-//       {datasetInfo && (
-//         <>
-//           <DatasetPreview datasetInfo={datasetInfo} />
-
-//           <button
-//             onClick={handleGenerateEDA}
-//             disabled={edaLoading}
-//             style={{
-//               marginTop: "24px",
-//               padding: "10px 16px",
-//               cursor: "pointer",
-//             }}
-//           >
-//             {edaLoading ? "Generating EDA..." : "Generate Basic EDA"}
-//           </button>
-
-//           <TargetSelector
-//             datasetId={datasetInfo.dataset_id}
-//             columns={datasetInfo.column_names}
-//             onTargetSelected={handleTargetSelected}
-//           />
-//         </>
-//       )}
-
-//       {edaReport && <EDAReport edaReport={edaReport} />}
-
-//       {targetInfo && targetInfo.is_suitable && (
-//         <PreprocessingCoach
-//           datasetId={datasetInfo.dataset_id}
-//           targetInfo={targetInfo}
-//           onPlanGenerated={setPreprocessingPlan}
-//         />
-//       )}
-
-//       {targetInfo && !targetInfo.is_suitable && (
-//         <div
-//           style={{
-//             marginTop: "32px",
-//             padding: "16px",
-//             border: "1px solid #ddd",
-//             borderRadius: "8px",
-//             maxWidth: "700px",
-//           }}
-//         >
-//           <h3>Next Step</h3>
-//           <p>
-//             This target column is not suitable for training. Select another
-//             target column.
-//           </p>
-//         </div>
-//       )}
-//       {datasetInfo && (
-//         <ErrorBoundary>
-//           <AdvancedEDA
-//             datasetId={datasetInfo.dataset_id}
-//             targetInfo={targetInfo}
-//           />
-//         </ErrorBoundary>
-//       )}
-
-//       {preprocessingPlan && (
-//         <div
-//           style={{
-//             marginTop: "32px",
-//             padding: "16px",
-//             border: "1px solid #ddd",
-//             borderRadius: "8px",
-//             maxWidth: "700px",
-//           }}
-//         >
-//           <h3>Next Step</h3>
-//           <p>
-//             Preprocessing plan generated. In the next layer, we will use this
-//             plan to train machine learning models.
-//           </p>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default UploadDataset;
-
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
 
@@ -222,32 +8,71 @@ import PreprocessingCoach from "../components/PreprocessingCoach";
 import AdvancedEDA from "../components/AdvancedEDA";
 import ErrorBoundary from "../components/ErrorBoundary";
 import ModelTrainer from "../components/ModelTrainer";
-import AITutorChat from "../components/AITutorChat";
+import MetricExplainer from "../components/MetricExplainer";
+import AITutorDock from "../components/AITutorDock";
+
+import CollapsiblePanel from "../components/ui/CollapsiblePanel";
 
 function UploadDataset() {
-  const [advancedEDA, setAdvancedEDA] = useState(null);
-  const [trainingResult, setTrainingResult] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [datasetInfo, setDatasetInfo] = useState(null);
   const [edaReport, setEdaReport] = useState(null);
   const [targetInfo, setTargetInfo] = useState(null);
+  const [advancedEDA, setAdvancedEDA] = useState(null);
   const [preprocessingPlan, setPreprocessingPlan] = useState(null);
+  const [trainingResult, setTrainingResult] = useState(null);
+
+  const [currentStep, setCurrentStep] = useState("upload");
+  const [modelTab, setModelTab] = useState("trainer");
 
   const [uploadLoading, setUploadLoading] = useState(false);
   const [edaLoading, setEdaLoading] = useState(false);
 
   const [error, setError] = useState("");
 
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0];
-
-    setAdvancedEDA(null);
-    setTrainingResult(null);
-    setSelectedFile(file || null);
+  const resetAnalysisState = () => {
     setDatasetInfo(null);
     setEdaReport(null);
     setTargetInfo(null);
+    setAdvancedEDA(null);
     setPreprocessingPlan(null);
+    setTrainingResult(null);
+    setCurrentStep("upload");
+    setModelTab("trainer");
+  };
+
+  const saveToHistory = (dataset) => {
+    const saved = localStorage.getItem("datasetHistory");
+    let history = [];
+
+    try {
+      history = saved ? JSON.parse(saved) : [];
+    } catch {
+      history = [];
+    }
+
+    const newItem = {
+      dataset_id: dataset.dataset_id,
+      filename: dataset.filename,
+      rows: dataset.rows,
+      columns: dataset.columns,
+      created_at: new Date().toLocaleString(),
+    };
+
+    const updatedHistory = [
+      newItem,
+      ...history.filter((item) => item.dataset_id !== dataset.dataset_id),
+    ].slice(0, 10);
+
+    localStorage.setItem("datasetHistory", JSON.stringify(updatedHistory));
+    window.dispatchEvent(new Event("dataset-history-updated"));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+
+    setSelectedFile(file || null);
+    resetAnalysisState();
     setError("");
   };
 
@@ -266,13 +91,8 @@ function UploadDataset() {
     formData.append("file", selectedFile);
 
     try {
-      setAdvancedEDA(null);
-      setTrainingResult(null);
       setUploadLoading(true);
       setError("");
-      setEdaReport(null);
-      setTargetInfo(null);
-      setPreprocessingPlan(null);
 
       const response = await axiosClient.post("/api/datasets/upload", formData, {
         headers: {
@@ -281,6 +101,8 @@ function UploadDataset() {
       });
 
       setDatasetInfo(response.data);
+      setCurrentStep("preview");
+      saveToHistory(response.data);
     } catch (err) {
       console.error("Upload error:", err);
 
@@ -323,273 +145,348 @@ function UploadDataset() {
   };
 
   const handleTargetSelected = (newTargetInfo) => {
-    setAdvancedEDA(null);
-    setTrainingResult(null);
     setTargetInfo(newTargetInfo);
+    setAdvancedEDA(null);
     setPreprocessingPlan(null);
+    setTrainingResult(null);
+    setModelTab("trainer");
   };
+
+  const canGoToPreprocessing = targetInfo && targetInfo.is_suitable;
+  const canGoToModelTrainer = preprocessingPlan && targetInfo?.is_suitable;
 
   return (
     <div>
-      <section id="upload-section">
-        <div
-          className="card"
-          style={{
-            padding: "24px",
-            background: "var(--bg-card)",
-          }}
-        >
-          <h2
-            style={{
-              margin: 0,
-              letterSpacing: "-0.03em",
-              color: "var(--text-main)",
-            }}
+      {currentStep === "upload" && (
+        <section id="upload-section">
+          <CollapsiblePanel
+            title="Upload Dataset"
+            subtitle="Start by uploading a CSV file. Other tools will unlock after upload."
+            defaultOpen
           >
-            Upload Dataset
-          </h2>
+            <div
+              style={{
+                padding: "22px",
+                border: "1px dashed var(--border)",
+                borderRadius: "14px",
+                background: "#fff7ed",
+                maxWidth: "620px",
+              }}
+            >
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                className="input"
+              />
 
-          <p
-            style={{
-              margin: "8px 0 0",
-              color: "var(--text-muted)",
-              maxWidth: "650px",
-            }}
-          >
-            Upload a CSV dataset to start analysis. The system will preview the
-            file, generate EDA, detect the target type, and recommend
-            preprocessing steps.
-          </p>
+              {selectedFile && (
+                <p
+                  style={{
+                    margin: "12px 0 0",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  Selected file: <strong>{selectedFile.name}</strong>
+                </p>
+              )}
 
-          <div
-            style={{
-              marginTop: "22px",
-              padding: "22px",
-              border: "1px dashed var(--border)",
-              borderRadius: "14px",
-              background: "#fff7ed",
-              maxWidth: "560px",
-            }}
-          >
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileChange}
-              className="input"
-            />
-
-            {selectedFile && (
-              <p
+              <button
+                onClick={handleUpload}
+                disabled={uploadLoading}
+                className="btn btn-primary"
                 style={{
-                  margin: "12px 0 0",
-                  color: "var(--text-muted)",
+                  display: "block",
+                  marginTop: "16px",
                 }}
               >
-                Selected file: <strong>{selectedFile.name}</strong>
-              </p>
-            )}
+                {uploadLoading ? "Uploading..." : "Upload CSV"}
+              </button>
 
-            <button
-              onClick={handleUpload}
-              disabled={uploadLoading}
-              className="btn btn-primary"
-              style={{
-                display: "block",
-                marginTop: "16px",
-              }}
-            >
-              {uploadLoading ? "Uploading..." : "Upload CSV"}
-            </button>
-
-            {error && (
-              <p
-                style={{
-                  color: "var(--danger)",
-                  marginTop: "14px",
-                  fontWeight: 600,
-                }}
-              >
-                {error}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {datasetInfo && (
-        <section id="dataset-preview-section" style={{ marginTop: "24px" }}>
-          <DatasetPreview datasetInfo={datasetInfo} />
-        </section>
-      )}
-
-      {datasetInfo && (
-        <section id="basic-eda-section" style={{ marginTop: "24px" }}>
-          <div
-            className="card"
-            style={{
-              padding: "22px",
-              background: "var(--bg-card)",
-            }}
-          >
-            <h2
-              style={{
-                marginTop: 0,
-                color: "var(--text-main)",
-              }}
-            >
-              Basic EDA
-            </h2>
-
-            <p
-              style={{
-                marginTop: "6px",
-                color: "var(--text-muted)",
-              }}
-            >
-              Generate rows, columns, missing values, duplicate rows, data types,
-              and descriptive statistics.
-            </p>
-
-            <button
-              onClick={handleGenerateEDA}
-              disabled={edaLoading}
-              className="btn btn-primary"
-              style={{
-                marginTop: "12px",
-              }}
-            >
-              {edaLoading ? "Generating EDA..." : "Generate Basic EDA"}
-            </button>
-          </div>
-
-          {edaReport && (
-            <div style={{ marginTop: "24px" }}>
-              <EDAReport edaReport={edaReport} />
+              {error && (
+                <p
+                  style={{
+                    color: "var(--danger)",
+                    marginTop: "14px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {error}
+                </p>
+              )}
             </div>
-          )}
+          </CollapsiblePanel>
         </section>
       )}
 
-      {datasetInfo && (
-        <section id="target-section" style={{ marginTop: "24px" }}>
-          <TargetSelector
-            datasetId={datasetInfo.dataset_id}
-            columns={datasetInfo.column_names}
-            onTargetSelected={handleTargetSelected}
-          />
-        </section>
-      )}
-
-      {datasetInfo && (
-        <section id="advanced-eda-section" style={{ marginTop: "24px" }}>
-          <ErrorBoundary>
-            <AdvancedEDA
-              datasetId={datasetInfo.dataset_id}
-              targetInfo={targetInfo}
-              onAdvancedEDAComplete={setAdvancedEDA}
-            />
-          </ErrorBoundary>
-        </section>
-      )}
-
-      {targetInfo && targetInfo.is_suitable && (
-        <section id="preprocessing-section" style={{ marginTop: "24px" }}>
-          <PreprocessingCoach
-            datasetId={datasetInfo.dataset_id}
-            targetInfo={targetInfo}
-            onPlanGenerated={setPreprocessingPlan}
-          />
-        </section>
-      )}
-
-      {targetInfo && !targetInfo.is_suitable && (
-        <section id="preprocessing-section" style={{ marginTop: "24px" }}>
-          <div
-            className="card"
-            style={{
-              padding: "22px",
-              background: "var(--bg-card)",
-            }}
+      {datasetInfo && currentStep !== "upload" && (
+        <section id="dataset-preview-section">
+          <CollapsiblePanel
+            title="Dataset Preview"
+            subtitle="Review the uploaded dataset before moving to analysis."
+            defaultOpen
+            rightContent={
+              currentStep === "preview" ? (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => setCurrentStep("eda")}
+                >
+                  Continue to EDA
+                </button>
+              ) : null
+            }
           >
-            <h3 style={{ marginTop: 0 }}>Target not suitable</h3>
-
-            <p style={{ color: "var(--text-muted)" }}>
-              This target column is not suitable for training. Select another
-              target column.
-            </p>
-          </div>
+            <DatasetPreview datasetInfo={datasetInfo} />
+          </CollapsiblePanel>
         </section>
       )}
 
-      {preprocessingPlan && (
-        <div
-          className="card"
-          style={{
-            marginTop: "24px",
-            padding: "22px",
-            background: "var(--bg-card)",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Next Step</h3>
+      {datasetInfo &&
+        ["eda", "preprocessing", "model"].includes(currentStep) && (
+          <section id="eda-section" style={{ marginTop: "24px" }}>
+            <CollapsiblePanel
+              title="EDA Workspace"
+              subtitle="Run basic EDA, select the target column, and generate advanced EDA."
+              defaultOpen={currentStep === "eda"}
+              rightContent={
+                currentStep === "eda" ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={!canGoToPreprocessing}
+                    onClick={() => setCurrentStep("preprocessing")}
+                  >
+                    Continue to Preprocessing
+                  </button>
+                ) : null
+              }
+            >
+              <div>
+                <div
+                  style={{
+                    padding: "16px",
+                    border: "1px solid var(--border)",
+                    borderRadius: "12px",
+                    background: "#fff7ed",
+                  }}
+                >
+                  <h3 style={{ marginTop: 0 }}>Basic EDA</h3>
 
-          <p style={{ color: "var(--text-muted)" }}>
-            Preprocessing plan generated. In the next layer, we will use this
-            plan to train machine learning models.
-          </p>
-        </div>
+                  <p style={{ color: "var(--text-muted)" }}>
+                    Generate rows, columns, missing values, duplicate rows, data
+                    types, and descriptive statistics.
+                  </p>
+
+                  <button
+                    onClick={handleGenerateEDA}
+                    disabled={edaLoading}
+                    className="btn btn-primary"
+                  >
+                    {edaLoading ? "Generating EDA..." : "Generate Basic EDA"}
+                  </button>
+
+                  {error && (
+                    <p
+                      style={{
+                        color: "var(--danger)",
+                        marginTop: "14px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {error}
+                    </p>
+                  )}
+                </div>
+
+                {edaReport && (
+                  <div style={{ marginTop: "20px" }}>
+                    <EDAReport edaReport={edaReport} />
+                  </div>
+                )}
+
+                <div style={{ marginTop: "20px" }}>
+                  <TargetSelector
+                    datasetId={datasetInfo.dataset_id}
+                    columns={datasetInfo.column_names}
+                    onTargetSelected={handleTargetSelected}
+                  />
+                </div>
+
+                <div style={{ marginTop: "20px" }}>
+                  <ErrorBoundary>
+                    <AdvancedEDA
+                      datasetId={datasetInfo.dataset_id}
+                      targetInfo={targetInfo}
+                      onAdvancedEDAComplete={setAdvancedEDA}
+                    />
+                  </ErrorBoundary>
+                </div>
+
+                {!canGoToPreprocessing && (
+                  <p
+                    style={{
+                      marginTop: "18px",
+                      color: "var(--danger)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Select a suitable target column before continuing to
+                    preprocessing.
+                  </p>
+                )}
+              </div>
+            </CollapsiblePanel>
+          </section>
+        )}
+
+      {datasetInfo &&
+        currentStep !== "upload" &&
+        canGoToPreprocessing &&
+        ["preprocessing", "model"].includes(currentStep) && (
+          <section id="preprocessing-section" style={{ marginTop: "24px" }}>
+            <CollapsiblePanel
+              title="Preprocessing Coach"
+              subtitle="Get recommendations for imputation, scaling, encoding, and feature handling."
+              defaultOpen={currentStep === "preprocessing"}
+              rightContent={
+                currentStep === "preprocessing" ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={!canGoToModelTrainer}
+                    onClick={() => setCurrentStep("model")}
+                  >
+                    Continue to Model Trainer
+                  </button>
+                ) : null
+              }
+            >
+              <PreprocessingCoach
+                datasetId={datasetInfo.dataset_id}
+                targetInfo={targetInfo}
+                onPlanGenerated={setPreprocessingPlan}
+              />
+
+              {!preprocessingPlan && (
+                <p
+                  style={{
+                    marginTop: "18px",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  Generate the preprocessing plan to unlock model training.
+                </p>
+              )}
+            </CollapsiblePanel>
+          </section>
+        )}
+
+      {datasetInfo &&
+        currentStep === "model" &&
+        targetInfo?.is_suitable && (
+          <section id="model-section" style={{ marginTop: "24px" }}>
+            <CollapsiblePanel
+              title="Modeling Lab"
+              subtitle="Train models and inspect metric explanations in separate tabs."
+              defaultOpen
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  marginBottom: "18px",
+                  borderBottom: "1px solid var(--border)",
+                  paddingBottom: "12px",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setModelTab("trainer")}
+                  className={
+                    modelTab === "trainer"
+                      ? "btn btn-primary"
+                      : "btn btn-secondary"
+                  }
+                >
+                  Model Trainer
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setModelTab("metrics")}
+                  className={
+                    modelTab === "metrics"
+                      ? "btn btn-primary"
+                      : "btn btn-secondary"
+                  }
+                >
+                  Metric Explainer
+                </button>
+              </div>
+
+              {modelTab === "trainer" && (
+                <ModelTrainer
+                  datasetId={datasetInfo?.dataset_id}
+                  targetInfo={targetInfo}
+                  onTrainingComplete={setTrainingResult}
+                />
+              )}
+
+              {modelTab === "metrics" && (
+                <>
+                  {trainingResult ? (
+                    <MetricExplainer trainingResult={trainingResult} />
+                  ) : (
+                    <div
+                      style={{
+                        padding: "18px",
+                        border: "1px dashed var(--border)",
+                        borderRadius: "12px",
+                        background: "#fff7ed",
+                      }}
+                    >
+                      <h3 style={{ marginTop: 0 }}>
+                        No training result yet
+                      </h3>
+
+                      <p style={{ color: "var(--text-muted)" }}>
+                        Train at least one model first. Then this tab will show
+                        MAE, RMSE, R², residual plots, confusion matrix, and
+                        other metric explanations.
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </CollapsiblePanel>
+          </section>
+        )}
+
+      {datasetInfo && (
+        <section id="reports-section" style={{ marginTop: "24px" }}>
+          <CollapsiblePanel
+            title="Reports"
+            subtitle="Report generation will come after experiment tracking."
+            defaultOpen={false}
+          >
+            <p style={{ color: "var(--text-muted)" }}>
+              This section will later generate downloadable project reports with
+              dataset summary, EDA, preprocessing decisions, model comparison,
+              and AI explanations.
+            </p>
+          </CollapsiblePanel>
+        </section>
       )}
 
-      {/* <section id="model-training-section" style={{ marginTop: "24px" }}>
-        <div
-          className="card"
-          style={{
-            padding: "22px",
-            background: "var(--bg-card)",
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Model Training</h2>
-
-          <p style={{ color: "var(--text-muted)" }}>
-            This section will be added in the next layer. It will train Linear
-            Regression, Ridge Regression, and Random Forest models using the
-            preprocessing pipeline.
-          </p>
-        </div>
-      </section> */}
-      <section id="model-training-section" style={{ marginTop: "24px" }}>
-      <ModelTrainer
-        datasetId={datasetInfo?.dataset_id}
+      <AITutorDock
+        datasetInfo={datasetInfo}
+        edaReport={edaReport}
         targetInfo={targetInfo}
-        onTrainingComplete={setTrainingResult}
+        advancedEDA={advancedEDA}
+        preprocessingPlan={preprocessingPlan}
+        trainingResult={trainingResult}
       />
-    </section>
-    <section id="ai-tutor-section" style={{ marginTop: "24px" }}>
-        <AITutorChat
-          datasetInfo={datasetInfo}
-          edaReport={edaReport}
-          targetInfo={targetInfo}
-          advancedEDA={advancedEDA}
-          preprocessingPlan={preprocessingPlan}
-          trainingResult={trainingResult}
-        />
-      </section>
-
-      <section id="reports-section" style={{ marginTop: "24px" }}>
-        <div
-          className="card"
-          style={{
-            padding: "22px",
-            background: "var(--bg-card)",
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Reports</h2>
-
-          <p style={{ color: "var(--text-muted)" }}>
-            Report generation will be added later after model training and
-            experiment tracking are complete.
-          </p>
-        </div>
-      </section>
     </div>
   );
 }
