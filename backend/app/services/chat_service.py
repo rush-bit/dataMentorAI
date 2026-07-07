@@ -145,3 +145,84 @@ def generate_tutor_answer(question: str, raw_context: dict[str, Any]) -> str:
             status_code=500,
             detail=f"AI tutor failed: {str(error)}"
         )
+
+def build_section_explanation_prompt(
+    section_type: str,
+    section_title: str,
+    context: dict[str, Any],
+) -> str:
+    context_json = json.dumps(context, indent=2, ensure_ascii=False)
+
+    return f"""
+You are DataMentor AI, an AI tutor for beginner data science students.
+
+Explain this dashboard section clearly.
+
+Section type:
+{section_type}
+
+Section title:
+{section_title}
+
+Available dataset context:
+{context_json}
+
+Your explanation should include:
+1. What this section shows.
+2. What the student should notice.
+3. Why it matters for machine learning.
+4. Any warning signs or important observations.
+5. What the student should do next.
+
+Rules:
+- Use the provided context only.
+- Do not invent column names, metric values, or model scores.
+- Keep the explanation beginner-friendly.
+- Use short headings and bullets.
+- If context is missing, say what needs to be generated first.
+
+Explanation:
+"""
+
+
+def generate_section_explanation(
+    section_type: str,
+    section_title: str,
+    raw_context: dict[str, Any],
+) -> str:
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="Gemini API key is missing. Add GEMINI_API_KEY to backend/.env",
+        )
+
+    compacted_context = compact_context(raw_context)
+
+    prompt = build_section_explanation_prompt(
+        section_type=section_type,
+        section_title=section_title,
+        context=compacted_context,
+    )
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+
+        explanation = getattr(response, "text", None)
+
+        if not explanation:
+            return "I could not generate an explanation from the available context."
+
+        return explanation
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI explanation failed: {str(error)}",
+        )

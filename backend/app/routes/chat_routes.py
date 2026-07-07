@@ -1,7 +1,15 @@
 from fastapi import APIRouter
 
-from app.schemas.chat_schema import TutorChatRequest, TutorChatResponse
-from app.services.chat_service import generate_tutor_answer
+from app.schemas.chat_schema import (
+    TutorChatRequest,
+    TutorChatResponse,
+    SectionExplanationRequest,
+    SectionExplanationResponse,
+)
+from app.services.chat_service import (
+    generate_tutor_answer,
+    generate_section_explanation,
+)
 
 
 router = APIRouter(
@@ -19,4 +27,17 @@ def tutor_chat(request: TutorChatRequest):
 
     return {
         "answer": answer
+    }
+
+
+@router.post("/explain-section", response_model=SectionExplanationResponse)
+def explain_section(request: SectionExplanationRequest):
+    explanation = generate_section_explanation(
+        section_type=request.section_type,
+        section_title=request.section_title,
+        raw_context=request.context,
+    )
+
+    return {
+        "explanation": explanation
     }

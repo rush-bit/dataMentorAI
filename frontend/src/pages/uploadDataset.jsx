@@ -10,6 +10,7 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import ModelTrainer from "../components/ModelTrainer";
 import MetricExplainer from "../components/MetricExplainer";
 import AITutorDock from "../components/AITutorDock";
+import AIExplanationBox from "../components/AIExplainationBox";
 
 import CollapsiblePanel from "../components/ui/CollapsiblePanel";
 
@@ -262,6 +263,16 @@ function UploadDataset() {
             goToModeling={() => setActiveStep("modeling")}
           />
         )}
+        <AIExplanationBox
+            sectionType="preprocessing"
+            sectionTitle="Preprocessing Coach"
+            disabled={!preprocessingPlan}
+            context={{
+              datasetInfo,
+              targetInfo,
+              preprocessingPlan,
+            }}
+          />
 
         {activeStep === "modeling" && datasetInfo && targetInfo?.is_suitable && (
           <ModelingPanel
@@ -432,6 +443,13 @@ function PreviewPanel({ datasetInfo, goToEDA }) {
       }
     >
       <DatasetPreview datasetInfo={datasetInfo} />
+      <AIExplanationBox
+        sectionType="dataset_preview"
+        sectionTitle="Dataset Preview"
+        context={{
+          datasetInfo,
+        }}
+      />
     </CollapsiblePanel>
   );
 }
@@ -440,6 +458,7 @@ function EDAPanel({
   datasetInfo,
   edaReport,
   targetInfo,
+  advancedEDA,
   edaLoading,
   error,
   handleGenerateEDA,
@@ -500,6 +519,17 @@ function EDAPanel({
               <EDAReport edaReport={edaReport} />
             </div>
           )}
+          <AIExplanationBox
+            sectionType="basic_eda"
+            sectionTitle="Basic EDA"
+            disabled={!edaReport}
+            disabledMessage="Generate Basic EDA first to unlock AI explanation."
+            context={{
+              datasetInfo,
+              edaReport,
+              targetInfo,
+            }}
+          />
         </CollapsiblePanel>
 
         <CollapsiblePanel
@@ -510,6 +540,17 @@ function EDAPanel({
             datasetId={datasetInfo.dataset_id}
             columns={datasetInfo.column_names}
             onTargetSelected={handleTargetSelected}
+          />
+          <AIExplanationBox
+            sectionType="target_selection"
+            sectionTitle="Target Selection"
+            disabled={!targetInfo}
+            disabledMessage="Select and analyze a target column first."
+            context={{
+              datasetInfo,
+              edaReport,
+              targetInfo,
+            }}
           />
         </CollapsiblePanel>
 
@@ -524,6 +565,18 @@ function EDAPanel({
               onAdvancedEDAComplete={setAdvancedEDA}
             />
           </ErrorBoundary>
+          <AIExplanationBox
+            sectionType="advanced_eda"
+            sectionTitle="Advanced EDA"
+            disabled={!advancedEDA}
+            disabledMessage="Generate Advanced EDA first to unlock AI explanation."
+            context={{
+              datasetInfo,
+              edaReport,
+              targetInfo,
+              advancedEDA,
+            }}
+          />
         </CollapsiblePanel>
 
         {!canContinue && (
@@ -628,17 +681,45 @@ function ModelingPanel({
       </div>
 
       {modelTab === "trainer" && (
-        <ModelTrainer
-          datasetId={datasetInfo?.dataset_id}
-          targetInfo={targetInfo}
-          onTrainingComplete={setTrainingResult}
-        />
+        <>
+          <ModelTrainer
+            datasetId={datasetInfo?.dataset_id}
+            targetInfo={targetInfo}
+            onTrainingComplete={setTrainingResult}
+          />
+
+          <AIExplanationBox
+            sectionType="model_training"
+            sectionTitle="Model Training Results"
+            disabled={!trainingResult}
+            disabledMessage="Train at least one model first."
+            context={{
+              datasetInfo,
+              targetInfo,
+              trainingResult,
+            }}
+          />
+        </>
       )}
 
       {modelTab === "metrics" && (
         <>
           {trainingResult ? (
-            <MetricExplainer trainingResult={trainingResult} />
+            <>
+              <MetricExplainer trainingResult={trainingResult} />
+
+              <AIExplanationBox
+                sectionType="metric_explainer"
+                sectionTitle="Metric Explainer"
+                disabled={!trainingResult}
+                disabledMessage="Train at least one model first."
+                context={{
+                  datasetInfo,
+                  targetInfo,
+                  trainingResult,
+                }}
+              />
+            </>
           ) : (
             <div
               style={{
